@@ -2,7 +2,7 @@
 
 ## Purpose
 
-Transforms quality decision data and evidence summaries into a polished, audience-appropriate executive report that is ready for distribution to senior stakeholders.
+Transforms quality decision data into three distinct output documents, each calibrated for a different audience. Called by the Quality Decision Agent after all scores, red flags, and improvement actions are finalised.
 
 ## Invocation
 
@@ -13,91 +13,206 @@ args:
   quality_decision: <quality_decision_agent output object>
   post_delivery_summary: <post_delivery_review output object>
   template: "templates/executive_report_template.md"
-  audience: "head_of_quality | program_director | trainer | client"
+  documents: ["executive_summary", "instructional_design_review", "operations_checklist"]
   format: "markdown | pdf | google_doc"
 ```
 
-## Audience Variants
+To generate a single document, pass one item in `documents`. Default is all three.
 
-The skill tailors content depth and tone to the specified audience:
+---
 
-| Audience | Focus | Tone | Detail Level |
+## Document 1: Executive Summary
+
+**Audience**: Head of Quality, Program Director, Executive Sponsor  
+**Tone**: Strategic, concise, decisive  
+**Length**: 1–2 pages
+
+### Sections
+
+#### Header Block
+- Program name, sector, delivery period, location, trainer name
+- Four scores in a visual panel: Pre-Delivery / Live Delivery / Post-Delivery / Overall
+- Quality band with RAG indicator (🟢 Excellent/Strong · 🟡 Acceptable · 🔴 Needs Improvement/High Risk)
+- Certification status in bold
+
+#### Executive Narrative (3–5 sentences)
+What the program achieved, where it stands against the quality standard, and the single most important action required. Written for a non-specialist reader.
+
+#### Red Flags Panel
+If any red flags are active, list them by ID and label with severity badge. If none: "No red flags detected."
+
+> **Important**: If the band was set by red flag override, state: *"Band escalated from [numerical band] to [final band] due to [N] active red flags."*
+
+#### Top 3 Strategic Actions
+Table of the three highest-priority improvement actions with proposed owners and deadlines. Source from `improvement_actions` in the quality decision output.
+
+#### Historical Trend (if prior delivery exists)
+One-line score delta. Trend arrow (▲ / ▼ / —). Status of prior action plan items (resolved / outstanding).
+
+---
+
+## Document 2: Instructional Design Review
+
+**Audience**: Learning & Curriculum Team, Trainer, Instructional Designer  
+**Tone**: Analytical, constructive, development-focused  
+**Length**: 3–5 pages
+
+### Sections
+
+#### Pre-Delivery Score Breakdown
+Table of the three pre-delivery dimensions with scores, weights, and RAG status:
+- Instructional Design Quality (40%)
+- Content Accuracy & Compliance (35%)
+- Technical & Delivery Readiness (25%)
+
+#### Instructional Design Findings
+
+Sub-section per instructional dimension:
+
+**Learning Objectives** *(RF-01 flag if active)*
+- Were objectives specific, measurable, and audience-appropriate?
+- Evidence: objective text reviewed, issues identified
+- Recommendation: immediate fix + next-cohort improvement
+
+**Content Sequencing** *(RF-02 flag if active)*
+- Did modules follow a logical scaffolded order?
+- Evidence: module flow reviewed, gaps or jumps identified
+- Recommendation: immediate fix + next-cohort improvement
+
+**Learner Activity Design** *(RF-03, RF-09 flags if active)*
+- Were interactive activities, practice tasks, and closure/transfer mechanisms present?
+- For online delivery: poll design, breakout briefs, application tasks
+- Evidence: activity log from materials and session monitoring
+- Recommendation across all four action tiers
+
+**Assessment Alignment** *(RF-08 flag if active)*
+- % of questions directly mapped to learning objectives
+- Difficulty distribution and reliability score
+- Flagged questions: too hard / too easy
+- Recommendation: immediate fix + next-cohort improvement
+
+#### Trainer Performance
+- Live Delivery Score (facilitation + pacing sub-scores)
+- Recording spot-check findings: delivery quality, compliance language, content accuracy
+- Engagement facilitation: how effectively the trainer drove participation
+- *(RF-05 flag if active: trainer-centred facilitation)*
+- Development recommendations (constructive framing, no individual participants named)
+
+#### Learner Engagement Analysis *(online programs)*
+- Session-by-session engagement scores with trend
+- Peak and low engagement windows with context
+- Participation by type: chat, polls, Q&A, reactions
+- *(RF-04 flag if active: low engagement)*
+- Recommendations for interaction redesign
+
+#### Assessment & Learning Outcomes
+- Pass rate and mean score vs. target
+- Outcome alignment score: which objectives were met / partially met / not met
+- *(RF-07 flag if active: weak attendance impacting completion)*
+- Curriculum recommendations
+
+#### Full Improvement Action Plan
+Complete table of all improvement actions generated by the quality decision agent, organised by dimension:
+
+| Dimension | Finding | Immediate Fix | Next-Cohort | Strategic | Owner |
+|---|---|---|---|---|---|
+| | | | | | |
+
+---
+
+## Document 3: Operations Checklist
+
+**Audience**: Online Delivery Team, Program Coordinator, IT Support  
+**Tone**: Direct, checklist-driven, action-first  
+**Length**: 1–2 pages
+
+### Sections
+
+#### Live Delivery Score Panel
+Three live-delivery dimensions with scores:
+- Learner Engagement: XX/100
+- Trainer Facilitation Quality: XX/100
+- Technical Execution: XX/100
+
+#### Active Operational Red Flags
+Highlight any of RF-03, RF-04, RF-05, RF-06, RF-07 that are active. For each:
+- Flag ID + label
+- What was observed
+- Required fix before next delivery
+
+#### Session-by-Session Quality Events Log
+Table: Session Date · Event Type · Severity · Description · Duration/Count · Resolved?
+
+Summarise total counts: Critical events · Warning events · Technical downtime (minutes)
+
+#### Attendance & Completion Summary
+
+| Session Date | Registered | Attended | Partial | Absent | Completion % |
+|---|---|---|---|---|---|
+| | | | | | |
+| **Total / Mean** | | | | | |
+
+*(RF-07 flag if completion < 60% on any day)*
+
+#### Pre-Delivery Readiness Failures
+List any checklist items that failed at pre-delivery audit. Indicate whether resolved before delivery or carried forward.
+
+#### Immediate Operational Fixes Required
+Numbered action list of everything that must be completed before the next session or re-delivery. Owner and deadline per item.
+
+| # | Action | Owner | Deadline |
 |---|---|---|---|
-| `head_of_quality` | All dimensions; systemic patterns; risk flags | Analytical | Full |
-| `program_director` | Program score; participant outcomes; improvement plan | Balanced | Summary + key details |
-| `trainer` | Trainer-dimension scores; participant feedback themes; specific recommendations | Developmental | Constructive |
-| `client` | Overall certification status; satisfaction scores; outcomes vs objectives | Professional | High-level |
+| 1 | | | |
 
-## Report Sections
+#### Setup Checklist for Next Delivery (Online Programs)
 
-### 1. Executive Summary
-- Program name, code, and delivery dates
-- Composite quality score and band (with visual indicator)
-- Certification decision
-- One-paragraph narrative summary (3–5 sentences)
+- [ ] Platform credentials tested and backup access confirmed
+- [ ] Join link generated and tested in incognito window
+- [ ] Attendance tracker linked to LMS session
+- [ ] Recording storage location verified
+- [ ] All polls pre-loaded in platform
+- [ ] Breakout room configuration saved
+- [ ] Trainer pre-delivery briefing completed
+- [ ] Participant invites sent with correct join link
+- [ ] `hooks/before_online_session.md` scheduled for T-30 min
 
-### 2. Quality Scorecard
-Table of the five dimensions with scores, weights, and weighted contributions. Visual RAG (Red/Amber/Green) status per dimension:
-- Green: dimension score ≥ 75
-- Amber: 60–74
-- Red: < 60
+---
 
-### 3. Participant Experience
-- Attendance and completion rates
-- Satisfaction mean and NPS with benchmark comparison (academy average for this program type)
-- Top 3 positive themes from open text
-- Top 3 improvement themes from open text (framed constructively)
+## Writing Guidelines (All Documents)
 
-### 4. Learning Outcomes
-- Assessment pass rate vs. program target
-- Competency gain narrative (from outcome alignment score)
-- Notable assessment insights (difficult questions, reliability)
+- Use plain English; avoid jargon except where technically required.
+- Frame all feedback constructively: **finding → evidence → recommendation**.
+- Never name individual participants. Trainer names may be used in documents sent to that trainer only.
+- Scores are reported to **one decimal place**.
+- Percentages are rounded to the nearest **whole number**.
+- Dates in **DD Month YYYY** format (e.g. 15 July 2026).
+- Red flag IDs (RF-01 through RF-09) are always shown alongside flag labels.
+- For online priority escalations, prefix the finding with: **[ONLINE PRIORITY]**
 
-### 5. Trainer Performance
-- Trainer delivery score with commentary
-- Standout strengths (from recording spot-check and feedback)
-- Development focus areas
-
-### 6. Improvement Directives
-Structured table of all improvement actions:
-
-| # | Dimension | Finding | Recommendation | Owner | Due Date | Priority |
-|---|---|---|---|---|---|---|
-| 1 | … | … | … | … | … | HIGH/MED/LOW |
-
-### 7. Historical Trend (if repeat delivery)
-- Score delta vs. prior delivery
-- Trend narrative
-- Actions from prior delivery: resolved / outstanding
-
-### 8. Appendix
-- Pre-delivery audit summary
-- Session-by-session quality events log
-- Raw score calculation audit trail (for internal audiences only)
-
-## Writing Guidelines
-
-- Use plain English; avoid jargon except where technically necessary.
-- Frame all feedback constructively: findings → evidence → recommendation.
-- Do not name individual participants in any section.
-- Scores are reported to one decimal place.
-- All percentages are rounded to the nearest whole number.
-- Dates in DD Month YYYY format.
+---
 
 ## Output
-
-Returns the completed report as:
-- **markdown**: Full markdown text ready for rendering.
-- **pdf**: Base64-encoded PDF (requires PDF rendering integration).
-- **google_doc**: Google Docs URL (requires `integrations/google_sheets_mcp.md` with Docs scope).
 
 ```json
 {
   "program_id": "<UUID>",
-  "audience": "<audience>",
-  "format": "<format>",
-  "report_content": "<markdown text | base64 PDF | Google Doc URL>",
-  "word_count": <int>,
+  "documents": {
+    "executive_summary": {
+      "format": "<format>",
+      "content": "<markdown | base64 | URL>",
+      "word_count": <int>
+    },
+    "instructional_design_review": {
+      "format": "<format>",
+      "content": "<markdown | base64 | URL>",
+      "word_count": <int>
+    },
+    "operations_checklist": {
+      "format": "<format>",
+      "content": "<markdown | base64 | URL>",
+      "word_count": <int>
+    }
+  },
   "generated_at": "<ISO-8601>"
 }
 ```
