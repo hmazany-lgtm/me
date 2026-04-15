@@ -24,12 +24,15 @@ server: lms-attendance-mcp
 
 ### Participant Record
 
+Sourced from the `Registrations` sheet in the Quality Workbook. The LMS holds the identity mapping; agents receive anonymised tokens only.
+
 ```json
 {
-  "participant_id": "<anonymised ID>",
+  "participant_id": "<anonymised token — maps to Registrations.Email internally>",
   "program_id": "<UUID>",
-  "session_id": "<UUID>",
-  "enrolled": true,
+  "session_date": "<YYYY-MM-DD — specific day within a multi-day program>",
+  "company": "<Registrations.Company — e.g. Al Rajhi Bank, Aramco, Tawuniya>",
+  "enrolment_status": "ENROLLED | PENDING_CONFIRMATION | WITHDRAWN",
   "join_time": "<ISO-8601 or null>",
   "leave_time": "<ISO-8601 or null>",
   "duration_minutes": <int>,
@@ -39,6 +42,16 @@ server: lms-attendance-mcp
   "certificate_issued": true | false
 }
 ```
+
+### Registration Status Mapping
+
+The `Registrations` sheet uses plain-language statuses. The LMS maps these on sync:
+
+| Sheet `Status` | LMS `enrolment_status` | Behaviour |
+|---|---|---|
+| `Confirmed` | `ENROLLED` | Included in roster; eligible for completion credit and certificate |
+| `Pending` | `PENDING_CONFIRMATION` | Included in roster for monitoring; no completion credit until confirmed |
+| `Cancelled` | `WITHDRAWN` | Excluded from roster; not counted in attendance or pass-rate metrics |
 
 ### Assessment Result
 
@@ -59,17 +72,20 @@ server: lms-attendance-mcp
 
 ## Common Operations
 
-### Pull participant roster for a session
+### Pull participant roster for a session day
+
+Programs may span multiple days (e.g. Insurance Fundamentals: 2026-07-15 → 2026-07-18). A separate roster call is made per session day.
 
 ```json
 {
   "tool": "lms_get_roster",
   "program_id": "<UUID>",
-  "session_id": "<UUID>"
+  "session_date": "<YYYY-MM-DD>",
+  "enrolment_status_filter": ["ENROLLED", "PENDING_CONFIRMATION"]
 }
 ```
 
-Returns array of Participant Records (enrolment data; attendance fields null until session starts).
+Returns array of Participant Records (enrolment data; attendance fields null until session starts). `WITHDRAWN` participants are excluded by default.
 
 ### Get live attendance (during session)
 

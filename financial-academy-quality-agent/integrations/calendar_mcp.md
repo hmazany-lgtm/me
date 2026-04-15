@@ -31,22 +31,57 @@ The backend is configured via the `CALENDAR_BACKEND` environment variable.
 
 ## Common Operations
 
-### Create a session event
+### Create a multi-day program block
+
+Programs span multiple consecutive days with fixed daily start/end times (sourced from `ProgramSchedule`). One all-day event is created for the program block, plus individual daily events for each session day.
+
+**Program block (spans full date range):**
 
 ```json
 {
   "tool": "calendar_create_event",
   "calendar": "Academy Programs",
   "event": {
-    "title": "<Program Title> — Session <N>",
-    "start": "<ISO-8601 datetime>",
-    "end": "<ISO-8601 datetime>",
-    "description": "<program_id>:<session_id>",
-    "attendees": ["<trainer email>", "<quality.monitor@academy.com>"],
-    "location": "<platform join URL or venue>"
+    "title": "<Program Title> [<Sector>]",
+    "start": "<Start Date>T00:00:00",
+    "end": "<End Date>T23:59:59",
+    "all_day": true,
+    "description": "program_id:<UUID> | trainer:<Trainer Name> | sector:<Sector>",
+    "location": "<Location>",
+    "attendees": ["<trainer email>", "<quality.monitor@academy.com>"]
   }
 }
 ```
+
+**Daily session event (one per day in the date range):**
+
+```json
+{
+  "tool": "calendar_create_event",
+  "calendar": "Academy Programs",
+  "event": {
+    "title": "<Program Title> — Day <N> of <Total Days>",
+    "start": "<YYYY-MM-DD>T<Start Time>:00",
+    "end": "<YYYY-MM-DD>T<End Time>:00",
+    "description": "program_id:<UUID> | session_date:<YYYY-MM-DD>",
+    "location": "<Location — physical address or 'Online'>",
+    "attendees": ["<trainer email>", "<quality.monitor@academy.com>"]
+  }
+}
+```
+
+**Real examples from current program schedule:**
+
+| Program | Days | Daily Hours | Location |
+|---|---|---|---|
+| Certified Compliance Officer | 2026-05-01 → 05-05 (5 days) | 09:00–15:00 | Riyadh |
+| Data Analysis & Reporting | 2026-06-10 → 06-12 (3 days) | 10:00–14:00 | Online |
+| Insurance Fundamentals | 2026-07-15 → 07-18 (4 days) | 08:30–16:30 | Jeddah |
+| IPO Masterclass | 2026-08-20 → 08-22 (3 days) | 09:00–17:00 | London |
+
+**Location handling:**
+- Physical locations (`Riyadh`, `Jeddah`, `London`) → set as venue string; no platform join URL.
+- `Online` → set location as platform join URL; trigger `hooks/before_online_session.md` 30 min before each daily start time.
 
 ### Check trainer availability
 
@@ -100,15 +135,31 @@ Returns: `{"available": true | false, "conflicts": [<event summaries>]}`
 
 ## Session Event Naming Convention
 
+Daily events follow this format:
+
 ```
-[Program Code] — [Program Title] — Session [N] of [Total]
+[Program Title] — Day [N] of [Total] ([Sector])
 ```
 
-Example: `FA-2024-007 — Advanced MiFID II Compliance — Session 2 of 4`
+Examples from current schedule:
+
+```
+Insurance Fundamentals — Day 1 of 4 (Insurance)
+IPO Masterclass — Day 2 of 3 (Capital Market)
+Data Analysis & Reporting — Day 3 of 3 (Banking)
+```
 
 ## Trigger Integration
 
-The calendar MCP is the source of session schedule data that fires the `hooks/before_online_session.md` hook. A scheduled job polls `Academy Programs` for events starting within 35 minutes and triggers the hook for any event with a matching `program_id` and `session_id` in the description.
+The calendar MCP fires lifecycle hooks based on daily session events:
+
+| Hook | Trigger condition |
+|---|---|
+| `hooks/before_online_session.md` | Online programs only — 30 min before each day's `Start Time` |
+| `hooks/after_session.md` | All programs — at each day's `End Time` |
+| `hooks/after_program_completion.md` | All programs — at the `End Time` on the `End Date` |
+
+A scheduled job polls `Academy Programs` for daily events matching `program_id` in the description. For in-person programs (Riyadh, Jeddah, London), `before_online_session.md` is skipped; only `after_session.md` and `after_program_completion.md` fire.
 
 ## Error Handling
 
