@@ -1,0 +1,119 @@
+// This is your Prisma schema file
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// ─── Questions ────────────────────────────────────────────────────────────────
+
+model Question {
+  id               String           @id
+  block            String
+  order            Int
+  type             String
+  status           String           @default("draft")
+  textEn           String
+  textAr           String
+  hintEn           String?
+  hintAr           String?
+  whyItMatters     String           @default("")
+  visibleToRoles   String           // JSON array
+  visibleToSectors String           // JSON array
+  hiddenFromRoles  String?          // JSON array
+  required         Boolean          @default(true)
+  version          Int              @default(1)
+  createdAt        DateTime         @default(now())
+  updatedAt        DateTime         @updatedAt
+  publishedAt      DateTime?
+  lastEditedBy     String?
+  scaleMin         Int?
+  scaleMax         Int?
+  scaleMinLabelEn  String?
+  scaleMaxLabelEn  String?
+  scaleMinLabelAr  String?
+  scaleMaxLabelAr  String?
+  minValue         Int?
+  maxValue         Int?
+
+  options    QuestionOption[]
+  logicRules LogicRule[]
+}
+
+model QuestionOption {
+  id         String   @id
+  questionId String
+  value      String
+  labelEn    String
+  labelAr    String
+  isOther    Boolean  @default(false)
+
+  question Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+}
+
+model LogicRule {
+  id               String  @id
+  questionId       String
+  conditionLogic   String  @default("AND")
+  action           String
+  targetQuestionId String?
+
+  question   Question         @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  conditions LogicCondition[]
+}
+
+model LogicCondition {
+  id         String  @id
+  ruleId     String
+  field      String
+  questionId String?
+  operator   String
+  value      String  // JSON-encoded
+
+  rule LogicRule @relation(fields: [ruleId], references: [id], onDelete: Cascade)
+}
+
+// ─── Responses ────────────────────────────────────────────────────────────────
+
+model SurveyResponse {
+  id              String           @id
+  sessionId       String
+  respondentRole  String
+  sector          String
+  companySize     String
+  startedAt       DateTime
+  completedAt     DateTime?
+  confidenceScore Float?
+  isComplete      Boolean          @default(false)
+  language        String           @default("en")
+  createdAt       DateTime         @default(now())
+
+  answers ResponseAnswer[]
+}
+
+model ResponseAnswer {
+  id              String   @id
+  responseId      String
+  questionId      String
+  questionVersion Int
+  value           String   // JSON-encoded (string | string[] | number)
+  answeredAt      DateTime
+
+  response SurveyResponse @relation(fields: [responseId], references: [id], onDelete: Cascade)
+}
+
+// ─── Admin Users ──────────────────────────────────────────────────────────────
+
+model AdminUser {
+  id        String   @id
+  name      String
+  email     String   @unique
+  password  String   // bcrypt hashed
+  role      String   @default("viewer")
+  createdAt DateTime @default(now())
+}

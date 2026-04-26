@@ -53,6 +53,7 @@ export interface QuestionOption {
 export type ConditionOperator = "equals" | "not_equals" | "in" | "not_in";
 
 export interface LogicCondition {
+  id?: string;
   field: "role" | "sector" | "question";
   questionId?: string;
   operator: ConditionOperator;
