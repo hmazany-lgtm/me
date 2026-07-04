@@ -399,7 +399,7 @@ export const AUDIT_LOGS: AuditLog[] = Array.from({ length: 60 }, (_, i) => {
     afterValue: action === "result_changed" ? "score: 72" : action === "permission_changed" ? "role: approver" : undefined,
     ipAddress: `10.20.${intBetween(1, 40)}.${intBetween(2, 250)}`,
     device: pick(["Chrome / Windows", "Edge / Windows", "Safari / macOS", "Chrome / Android"]),
-    riskLevel: highRisk ? pick(["medium", "high"] as const) : "low",
+    riskLevel: (highRisk ? pick(["medium", "high"]) : "low") as "low" | "medium" | "high",
     notes: highRisk ? "Sensitive action — watermark applied." : "",
     createdAt: "2026-07-0" + intBetween(1, 4) + "T" + String(intBetween(6, 18)).padStart(2, "0") + ":" + String(intBetween(0, 59)).padStart(2, "0") + ":00Z",
   };

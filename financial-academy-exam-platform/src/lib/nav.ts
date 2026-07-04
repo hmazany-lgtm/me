@@ -32,6 +32,7 @@ export const NAV: NavItem[] = [
   { label: "Certificates", href: "/certificates", icon: "award", group: "Delivery" },
   { label: "Committees", href: "/committees", icon: "committee", perm: ["governance_decision"], group: "Trust" },
   { label: "Vendors", href: "/vendors", icon: "vendor", group: "Admin" },
+  { label: "Notifications", href: "/notifications", icon: "bell", group: "Admin" },
   { label: "Users & Roles", href: "/users", icon: "id", perm: ["manage_users"], group: "Admin" },
   { label: "Audit Trail", href: "/audit", icon: "log", perm: ["view_audit"], group: "Admin" },
   { label: "Settings", href: "/settings", icon: "cog", group: "Admin" },
