@@ -133,8 +133,8 @@ export default function InvigilationPage() {
                       </Td>
                       <Td className="text-right">
                         <div className="inline-flex items-center gap-1">
-                          <Button variant="ghost" className="!px-2 !py-1 text-xs" title="Pause candidate session">Pause</Button>
-                          <Button variant="ghost" className="!px-2 !py-1 text-xs" title="Record assist / support">Assist log</Button>
+                          <Button variant="ghost" className="!px-2 !py-1 text-xs">Pause</Button>
+                          <Button variant="ghost" className="!px-2 !py-1 text-xs">Assist log</Button>
                           <Button variant="secondary" href="/incidents" className="!px-2 !py-1 text-xs">Report incident</Button>
                         </div>
                       </Td>

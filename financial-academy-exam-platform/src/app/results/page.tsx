@@ -35,7 +35,7 @@ export default function ResultsPage() {
           mayRelease ? (
             <Button variant="primary"><Icon name="check" className="w-4 h-4" />Release results</Button>
           ) : (
-            <Button variant="primary" disabled title="Requires release_result permission"><Icon name="lock" className="w-4 h-4" />Release results</Button>
+            <Button variant="primary" disabled><Icon name="lock" className="w-4 h-4" />Release results</Button>
           )
         }
       />

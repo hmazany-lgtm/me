@@ -60,7 +60,7 @@ export default function BlueprintsPage() {
                 <Td><StatusBadge status={bp.status} /></Td>
                 <Td className="text-right tabular-nums">{num(bp.totalQuestions)}</Td>
                 <Td className="text-right tabular-nums">{bp.domains.length}</Td>
-                <Td><Badge tone={readiness.overall}>{READINESS_LABEL[readiness.overall]}</Badge></Td>
+                <Td><Badge tone={readiness.overall as "green" | "amber" | "red"}>{READINESS_LABEL[readiness.overall]}</Badge></Td>
               </tr>
             ))}
           </tbody>

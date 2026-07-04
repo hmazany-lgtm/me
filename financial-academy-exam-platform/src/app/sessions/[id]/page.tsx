@@ -1,9 +1,8 @@
 "use client";
 import { notFound } from "next/navigation";
-import { PageHeader, Card, CardHeader, Badge, StatusBadge, Button, InfoBanner, Table, Th, Td } from "@/components/ui";
+import { PageHeader, Card, CardHeader, Badge, StatusBadge, Button, InfoBanner, Table, Th, Td, RiskBadge } from "@/components/ui";
 import { SESSIONS, CANDIDATES, VENDORS, INCIDENTS } from "@/data/seed";
 import { certName, certCode, centerName, titleCase, shortDate, userName, mask } from "@/lib/format";
-import { RiskBadge } from "@/components/ui";
 import { Icon } from "@/components/Icon";
 
 export default function SessionDetail({ params }: { params: { id: string } }) {
