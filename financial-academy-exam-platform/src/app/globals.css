@@ -1,0 +1,61 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --tfa-navy: #0b1728;
+  --tfa-teal: #0e7c86;
+  --tfa-gold: #c9a24b;
+}
+
+html {
+  font-feature-settings: "cv11", "ss01";
+}
+
+body {
+  @apply bg-navy-50 text-navy-900 antialiased;
+}
+
+/* Diagonal watermark used on secure content screens */
+.tfa-watermark::before {
+  content: attr(data-watermark);
+  position: fixed;
+  inset: 0;
+  z-index: 5;
+  pointer-events: none;
+  background-repeat: repeat;
+  opacity: 0.06;
+  color: #0b1728;
+  font-size: 13px;
+  white-space: pre;
+  transform: rotate(-24deg) scale(1.4);
+  line-height: 5.5rem;
+  letter-spacing: 0.05em;
+  text-align: center;
+}
+
+/* Prevent selection on protected question review surfaces */
+.no-select {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  user-select: none;
+}
+
+@media print {
+  .no-print,
+  .print-block * {
+    display: none !important;
+  }
+  .print-block::after {
+    content: "Printing of secure exam content is disabled by policy.";
+    display: block !important;
+    padding: 4rem;
+    font-size: 1.5rem;
+    text-align: center;
+  }
+}
+
+/* Thin scrollbars for the executive look */
+::-webkit-scrollbar { width: 9px; height: 9px; }
+::-webkit-scrollbar-thumb { @apply bg-navy-200 rounded-full; }
+::-webkit-scrollbar-track { background: transparent; }
