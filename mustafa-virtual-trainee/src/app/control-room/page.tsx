@@ -1,7 +1,6 @@
-"use client";
 
 import { useEffect, useState } from "react";
-import Link from "next/link";
+import Link from "@/components/link";
 import { useLang } from "@/components/providers";
 import { PageHeader, ScoreRing, Badge, Meter } from "@/components/ui";
 import { MustafaAvatar } from "@/components/logo";

@@ -1,8 +1,7 @@
-"use client";
 
-import Link from "next/link";
+import Link from "@/components/link";
 import { useEffect, useState } from "react";
-import { useParams } from "next/navigation";
+import { useParams } from "@/lib/router";
 import { useLang } from "@/components/providers";
 import { PageHeader, Badge } from "@/components/ui";
 import { store } from "@/lib/store";

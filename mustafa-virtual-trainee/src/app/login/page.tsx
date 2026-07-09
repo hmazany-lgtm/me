@@ -1,9 +1,8 @@
-"use client";
 
-import { useRouter } from "next/navigation";
+import { useRouter } from "@/lib/router";
 import { useAuth, useLang } from "@/components/providers";
 import { Logo } from "@/components/logo";
-import Link from "next/link";
+import Link from "@/components/link";
 
 export default function LoginPage() {
   const { t, locale, toggle } = useLang();

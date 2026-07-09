@@ -1,4 +1,3 @@
-"use client";
 
 import { useLang } from "@/components/providers";
 import { PageHeader } from "@/components/ui";

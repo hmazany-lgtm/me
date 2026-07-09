@@ -1,6 +1,5 @@
-"use client";
 
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname, useRouter } from "@/lib/router";
 import { useEffect, useState } from "react";
 import { useAuth } from "./providers";
 import { AppShell } from "./shell";

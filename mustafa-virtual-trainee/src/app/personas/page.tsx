@@ -1,7 +1,6 @@
-"use client";
 
 import { useState } from "react";
-import Link from "next/link";
+import Link from "@/components/link";
 import { useLang } from "@/components/providers";
 import { PageHeader, Badge } from "@/components/ui";
 import { personaList } from "@/lib/personas";

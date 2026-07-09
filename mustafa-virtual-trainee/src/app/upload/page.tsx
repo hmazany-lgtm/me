@@ -1,7 +1,6 @@
-"use client";
 
 import { useRef, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter } from "@/lib/router";
 import { useLang } from "@/components/providers";
 import { PageHeader, Badge } from "@/components/ui";
 import { usePrograms, ProgrammePicker } from "@/components/programme-picker";

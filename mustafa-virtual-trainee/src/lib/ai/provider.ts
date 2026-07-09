@@ -29,7 +29,7 @@ export const localProvider: AIProvider = {
 export const hostedProvider: AIProvider = {
   name: "hosted-model",
   async generate(input) {
-    const apiKey = process.env.ANTHROPIC_API_KEY || process.env.AI_API_KEY;
+    const apiKey = import.meta.env?.VITE_AI_API_KEY;
     if (!apiKey) return runEngine(input);
     // Integration point:
     //   const res = await fetch("https://api.anthropic.com/v1/messages", {
@@ -51,6 +51,6 @@ export const hostedProvider: AIProvider = {
 };
 
 export function getProvider(): AIProvider {
-  const key = process.env.ANTHROPIC_API_KEY || process.env.AI_API_KEY;
+  const key = import.meta.env?.VITE_AI_API_KEY;
   return key ? hostedProvider : localProvider;
 }

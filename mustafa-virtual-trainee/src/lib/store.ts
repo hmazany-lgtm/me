@@ -1,4 +1,3 @@
-"use client";
 
 import type { Programme, AdminSettings, Suggestion } from "./types";
 import { seedProgrammes, defaultSettings } from "./data";

@@ -1,4 +1,3 @@
-"use client";
 
 import { useAuth, useLang, type Permission } from "@/components/providers";
 import { PageHeader, Badge } from "@/components/ui";

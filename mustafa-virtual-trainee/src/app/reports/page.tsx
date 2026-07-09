@@ -1,4 +1,3 @@
-"use client";
 
 import { useMemo } from "react";
 import { useAuth, useLang } from "@/components/providers";

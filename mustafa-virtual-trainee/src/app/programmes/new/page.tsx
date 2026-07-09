@@ -1,6 +1,5 @@
-"use client";
 
-import { useRouter } from "next/navigation";
+import { useRouter } from "@/lib/router";
 import { useState } from "react";
 import { useAuth, useLang } from "@/components/providers";
 import { PageHeader, Select } from "@/components/ui";

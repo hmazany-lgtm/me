@@ -1,7 +1,6 @@
-"use client";
 
-import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import Link from "@/components/link";
+import { usePathname, useRouter } from "@/lib/router";
 import { useState } from "react";
 import { useAuth, useLang, type Permission } from "./providers";
 import { Logo } from "./logo";

@@ -1,29 +1,30 @@
 # dependencies
 /node_modules
-/.pnp
-.pnp.js
 
-# next.js
-/.next/
-/out/
-next-env.d.ts
-
-# production
+# build output
+/dist
 /build
 
-# misc
-.DS_Store
-*.pem
-.vscode
-
-# debug
+# vite / logs
+*.local
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+pnpm-debug.log*
 
 # env
 .env
 .env*.local
 
+# editor / os
+.DS_Store
+.vscode/*
+!.vscode/extensions.json
+.idea
+
 # typescript
 *.tsbuildinfo
+
+# tsc -b composite artifacts
+vite.config.js
+vite.config.d.ts

@@ -1,4 +1,3 @@
-"use client";
 
 import { useState } from "react";
 import { useLang } from "@/components/providers";
@@ -8,6 +7,7 @@ import { usePrograms, ProgrammePicker } from "@/components/programme-picker";
 import { SuggestionCard } from "@/components/suggestion-card";
 import { personaList } from "@/lib/personas";
 import { store } from "@/lib/store";
+import { runEngine } from "@/lib/ai/engine";
 import { label } from "@/lib/i18n";
 import type { EngineResult, PersonaMode, Tone, EngineInput } from "@/lib/types";
 
@@ -44,14 +44,12 @@ export default function SimulationPage() {
       tone,
       locale,
     };
-    try {
-      const res = await fetch("/api/engine", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(input) });
-      const data = (await res.json()) as EngineResult;
-      // small delay for perceived "thinking"
-      setTimeout(() => { setResult(data); setLoading(false); }, 500);
-    } catch {
-      setLoading(false);
-    }
+    // Run the engagement engine directly (client-side). Swapped from a Next.js
+    // API route during the migration to Vite; see src/lib/ai/provider.ts for
+    // the hosted-model integration point.
+    const data = runEngine(input);
+    // small delay for perceived "thinking"
+    setTimeout(() => { setResult(data); setLoading(false); }, 500);
   };
 
   return (

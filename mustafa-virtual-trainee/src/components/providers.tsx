@@ -1,4 +1,3 @@
-"use client";
 
 import React, { createContext, useContext, useEffect, useMemo, useState } from "react";
 import type { Locale, User, Role } from "@/lib/types";

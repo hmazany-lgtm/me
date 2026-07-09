@@ -1,7 +1,6 @@
-"use client";
 
 import { useEffect, useState } from "react";
-import Link from "next/link";
+import Link from "@/components/link";
 import { useLang } from "@/components/providers";
 import { PageHeader, Badge } from "@/components/ui";
 import { usePrograms, ProgrammePicker } from "@/components/programme-picker";

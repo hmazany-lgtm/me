@@ -39,11 +39,14 @@ Built for the financial sector.
 
 ## 🧱 Tech stack
 
-- **Next.js 14** (App Router) + **React 18** + **TypeScript**
+Built on **Lovable's native stack** so it can be edited visually in Lovable:
+
+- **Vite** + **React 18** + **TypeScript**
+- **React Router** for client-side routing
 - **Tailwind CSS** design system (Financial Academy teal + gold, RTL-aware)
 - **AI provider abstraction** (`src/lib/ai/`) — ships with a deterministic
   engine that runs with **zero API keys**; a Claude-compatible hosted provider
-  is wired as an optional drop-in.
+  is wired as an optional drop-in (`VITE_AI_API_KEY`).
 - **Prisma / PostgreSQL** reference schema (`prisma/schema.prisma`)
 - Client-side store seeded from sample data so the demo runs with no backend DB.
 
@@ -51,13 +54,20 @@ Built for the financial sector.
 
 ```bash
 npm install
-npm run dev      # http://localhost:3000
+npm run dev        # http://localhost:3000
 # or
-npm run build && npm start
+npm run build && npm run preview
 ```
 
 No environment variables are required. Optional configuration lives in
-`.env.example` (hosted AI model, database URL).
+`.env.example`.
+
+### 💜 Editing in Lovable
+
+This repo uses Lovable's expected structure (Vite + React + React Router +
+Tailwind, `@/` alias to `src/`). To work on it in Lovable, connect Lovable to
+this GitHub repo (or import it) — the visual editor will pick up the components,
+routes, and Tailwind design tokens directly.
 
 ### Demo login
 
@@ -74,40 +84,45 @@ Mustafa interventions across the session timeline.
 ## 🗂️ Project structure
 
 ```
+index.html               Vite entry
 src/
-  app/
-    page.tsx              Landing page (wow-factor homepage)
-    login/                Role-based mock login
-    dashboard/            KPI overview + quick actions
-    programmes/           List · detail · create form (all setup fields)
-    upload/               Content upload + paste agenda
-    analysis/             Programme analysis (summary, themes, moments…)
-    personas/             Persona builder / selector
-    control-room/         Live session dashboard + trainer private assistant
-    simulation/           Live Simulation ("Ask Mustafa")
-    interventions/        Intervention taxonomy + ready suggestions
-    question-bank/        Dynamic, categorized question bank
-    activities/           Activity generator (14 formats)
-    reports/              Branded, printable/PDF Engagement Report
-    admin/                Admin settings (tone, limits, branding…)
-    users/                Roles & permissions matrix
-    help/                 Responsible AI & privacy + system prompt
-    api/engine/           Engagement engine API route
-  components/             Providers (i18n + auth), shell, UI kit, cards
+  main.tsx               React root + BrowserRouter
+  App.tsx                Route table (all pages)
+  index.css              Tailwind layers + design-system component classes
+  app/                   Page components (one folder per screen)
+    page.tsx             Landing page (wow-factor homepage)
+    login/               Role-based mock login
+    dashboard/           KPI overview + quick actions
+    programmes/          List · detail · create form (all setup fields)
+    upload/              Content upload + paste agenda
+    analysis/            Programme analysis (summary, themes, moments…)
+    personas/            Persona builder / selector
+    control-room/        Live session dashboard + trainer private assistant
+    simulation/          Live Simulation ("Ask Mustafa")
+    interventions/       Intervention taxonomy + ready suggestions
+    question-bank/       Dynamic, categorized question bank
+    activities/          Activity generator (14 formats)
+    reports/             Branded, printable/PDF Engagement Report
+    admin/               Admin settings (tone, limits, branding…)
+    users/               Roles & permissions matrix
+    help/                Responsible AI & privacy + system prompt
+  components/            Providers (i18n + auth), shell, UI kit, cards,
+                         Link + router adapters (React Router)
   lib/
-    types.ts              Full domain model
-    i18n.ts               Bilingual dictionary (AR/EN)
-    data.ts               Seed users, sample programme, question bank, activities
-    personas.ts           The six Mustafa personas
-    analysis.ts           Content analysis generator
-    qbank.ts              Question bank generator
-    report.ts             Engagement report generator
-    store.ts              Client persistence layer
+    types.ts             Full domain model
+    i18n.ts              Bilingual dictionary (AR/EN)
+    data.ts              Seed users, sample programme, question bank, activities
+    personas.ts          The six Mustafa personas
+    analysis.ts          Content analysis generator
+    qbank.ts             Question bank generator
+    report.ts            Engagement report generator
+    store.ts             Client persistence layer (localStorage)
+    router.ts            Next→React Router navigation shims
     ai/
-      prompts.ts          System prompt + persona/tone guidance
-      engine.ts           Deterministic engagement engine
-      provider.ts         AI provider abstraction (local / hosted)
-prisma/schema.prisma      Production data model (PostgreSQL/Supabase)
+      prompts.ts         System prompt + persona/tone guidance
+      engine.ts          Deterministic engagement engine
+      provider.ts        AI provider abstraction (local / hosted)
+prisma/schema.prisma     Production data model (PostgreSQL/Supabase)
 ```
 
 ## 🤖 AI prompting logic
@@ -115,8 +130,8 @@ prisma/schema.prisma      Production data model (PostgreSQL/Supabase)
 Mustafa's behavior is governed by a single strong system prompt
 (`src/lib/ai/prompts.ts`), combined with per-persona and per-tone guidance. The
 engagement engine (`engine.ts`) turns session context into scored, typed,
-bilingual interventions. To use a hosted model, set `ANTHROPIC_API_KEY` — the
-provider abstraction routes to it while keeping the same interface.
+bilingual interventions — running entirely client-side. To use a hosted model,
+set `VITE_AI_API_KEY`; the provider abstraction keeps the same interface.
 
 ## 🔒 Responsible AI
 
