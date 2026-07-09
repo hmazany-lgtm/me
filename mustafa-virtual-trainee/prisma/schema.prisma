@@ -1,0 +1,237 @@
+// ---------------------------------------------------------------------------
+// Mustafa – Virtual Trainee Engagement Agent
+// Reference database schema (PostgreSQL / Supabase compatible).
+//
+// The shipped demo runs on a client-side store seeded from src/lib/data.ts so
+// it works with zero infrastructure. This schema documents the production data
+// model and is ready for `prisma migrate` when a database is connected.
+// ---------------------------------------------------------------------------
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  admin
+  programme_manager
+  trainer
+  coordinator
+  viewer
+}
+
+enum Sector {
+  banking
+  insurance
+  capital_market
+  fintech
+  leadership
+  compliance
+  risk
+  sales
+  operations
+  customer_experience
+}
+
+enum Platform {
+  zoom
+  teams
+  webex
+  google_meet
+  lms
+  custom
+}
+
+enum ProgrammeLevel {
+  beginner
+  intermediate
+  advanced
+  executive
+}
+
+enum SuggestionStatus {
+  pending
+  approved
+  rejected
+  posted
+}
+
+model User {
+  id         String      @id @default(cuid())
+  name       String
+  nameAr     String
+  email      String      @unique
+  role       Role
+  createdAt  DateTime    @default(now())
+  programmes Programme[] @relation("CreatedProgrammes")
+  auditLogs  AuditLog[]
+}
+
+model Programme {
+  id                 String            @id @default(cuid())
+  name               String
+  nameAr             String
+  code               String
+  date               DateTime
+  trainerName        String
+  coordinatorName    String
+  targetAudience     String
+  sector             Sector
+  platform           Platform
+  language           String
+  level              ProgrammeLevel
+  durationMinutes    Int
+  participantProfile String
+  sensitiveTopics    String?
+  engagementStyle    String
+  mustafaVisible     Boolean           @default(true)
+  createdBy          String
+  creator            User              @relation("CreatedProgrammes", fields: [createdBy], references: [id])
+  createdAt          DateTime          @default(now())
+
+  objectives         LearningObjective[]
+  outcomes           LearningOutcome[]
+  agenda             AgendaItem[]
+  content            UploadedContent[]
+  sessions           Session[]
+  questions          BankQuestion[]
+}
+
+model LearningObjective {
+  id          String    @id @default(cuid())
+  programmeId String
+  programme   Programme @relation(fields: [programmeId], references: [id], onDelete: Cascade)
+  text        String
+  order       Int       @default(0)
+}
+
+model LearningOutcome {
+  id          String    @id @default(cuid())
+  programmeId String
+  programme   Programme @relation(fields: [programmeId], references: [id], onDelete: Cascade)
+  text        String
+  order       Int       @default(0)
+}
+
+model AgendaItem {
+  id          String    @id @default(cuid())
+  programmeId String
+  programme   Programme @relation(fields: [programmeId], references: [id], onDelete: Cascade)
+  title       String
+  minutes     Int
+  order       Int       @default(0)
+}
+
+model UploadedContent {
+  id          String    @id @default(cuid())
+  programmeId String
+  programme   Programme @relation(fields: [programmeId], references: [id], onDelete: Cascade)
+  fileName    String
+  fileType    String
+  sizeKb      Int
+  analysis    Json?
+  uploadedAt  DateTime  @default(now())
+}
+
+model Session {
+  id           String            @id @default(cuid())
+  programmeId  String
+  programme    Programme         @relation(fields: [programmeId], references: [id], onDelete: Cascade)
+  persona      String
+  tone         String
+  startedAt    DateTime          @default(now())
+  endedAt      DateTime?
+  suggestions  Suggestion[]
+  events       EngagementEvent[]
+  chatMessages ChatMessage[]
+  report       Report?
+}
+
+model Suggestion {
+  id         String           @id @default(cuid())
+  sessionId  String
+  session    Session          @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  type       String
+  persona    String
+  textAr     String
+  textEn     String
+  purposeAr  String
+  purposeEn  String
+  delivery   String
+  audience   String
+  confidence Float
+  status     SuggestionStatus @default(pending)
+  createdAt  DateTime         @default(now())
+}
+
+model ChatMessage {
+  id        String   @id @default(cuid())
+  sessionId String
+  session   Session  @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  text      String
+  tone      String
+  postedAt  DateTime @default(now())
+}
+
+model EngagementEvent {
+  id        String   @id @default(cuid())
+  sessionId String
+  session   Session  @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  minute    Int
+  kind      String
+  score     Int?
+  createdAt DateTime @default(now())
+}
+
+model BankQuestion {
+  id          String    @id @default(cuid())
+  programmeId String
+  programme   Programme @relation(fields: [programmeId], references: [id], onDelete: Cascade)
+  category    String
+  textAr      String
+  textEn      String
+  purposeAr   String
+  purposeEn   String
+  timing      String
+  difficulty  String
+  delivery    String
+}
+
+model Report {
+  id                 String   @id @default(cuid())
+  sessionId          String   @unique
+  session            Session  @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  engagementScore    Int
+  participationLevel String
+  data               Json
+  generatedAt        DateTime @default(now())
+}
+
+model Settings {
+  id                          String  @id @default("singleton")
+  defaultTone                 String  @default("formal")
+  defaultLanguage             String  @default("ar")
+  approvedTerminology         String[]
+  restrictedWords             String[]
+  autoPost                    Boolean @default(false)
+  maxInterventionsPer10Min    Int     @default(3)
+  minMinutesBetweenIntervention Int   @default(3)
+  allowDevilsAdvocate         Boolean @default(true)
+  mustafaVisibleDefault       Boolean @default(true)
+  organizationName            String  @default("The Financial Academy")
+  organizationNameAr          String  @default("الأكاديمية المالية")
+  primaryColor                String  @default("#0f7a62")
+}
+
+model AuditLog {
+  id      String   @id @default(cuid())
+  actorId String
+  actor   User     @relation(fields: [actorId], references: [id])
+  action  String
+  target  String
+  at      DateTime @default(now())
+}
